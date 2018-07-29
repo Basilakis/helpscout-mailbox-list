@@ -1,5 +1,4 @@
 <?php
-error_reporting(1);
 /*
 Plugin Name: Helpscout List
 Plugin URI: http://creativeg.gr
@@ -10,8 +9,7 @@ Version: 1.0
 License: GPLv2 or later
 */
 
-
-const HELPSCOUT_SECRET_KEY = '';
+const HELPSCOUT_SUPPORT_API_KEY = '245f8b550acb2bb73bb61e8d5f19752ca4ea83a8';
 
 require('CustomHelpScout.php');
 function helpscout_maillist()
@@ -23,15 +21,16 @@ function helpscout_maillist()
               <div>
                 <div>
                   <span v-if="loading_mailbox">Loading your mailbox ...</span>
-                    <h2 v-if="choosen_mailbox_name">Your Mailbox</h2>
-                    <h3 v-if="choosen_mailbox_name">{{choosen_mailbox_name}}</h3>
+                    <!-- <h2 v-if="choosen_mailbox_name">Your Mailbox</h2>
+                    <h3 v-if="choosen_mailbox_name">{{choosen_mailbox_name}}</h3> -->
                 </div>
                 <span v-if="loading_mail">Loading mails ...</span>
                 <div class="conversations" v-if="conversations.length != 0">
                   <h4>Your Mails</h4>
                   
                     <ul>
-                      <li v-for="(j,index) in conversations" data-toggle="modal" data-backdrop="false" data-target="#myModal" v-on:click="showConversation(j.id,index)" class="subject" v-if="j.subject"><b>Subject:</b> {{j.subject}} &nbsp;<b>On</b>:
+                      <li v-for="(j,index) in conversations" data-toggle="modal" data-backdrop="false" data-target="#myModal" v-on:click="showConversation(j.id,index)" class="subject" v-if="j.subject">
+                          <h4><b>Subject:</b> {{j.subject}} &nbsp;</h4><b>- On</b>:
                       {{moment(j.created, 'YYYY-MM-DD hh:mm').format('DD/MM/YYYY hh:mm a')}}</li>
                     </ul> 
               </div>
@@ -45,27 +44,24 @@ function helpscout_maillist()
           </div>
 
 
-      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="top: 10%;" >
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Convesation</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+              <h5 class="modal-title" id="exampleModalLabel"><strong>Convesation Details</strong></h5>
             </div>
             <div class="modal-body" style="overflow-y:scroll;height:500px;">
-              <p><b>Subject:</b> {{conversationdetail.subject}}</p><br/>
-              <p><b>Date:</b> {{moment(conversationdetail.created, 'YYYY-MM-DD').format('DD/MM/YYYY')}}</p><br/>
-              <hr>
+              <h4><strong>Subject:</strong> {{conversationdetail.subject}}</h4><br/>
+              <strong>Date:</strong> {{moment(conversationdetail.created, 'YYYY-MM-DD').format('DD/MM/YYYY')}}<br/>
+              <hr style="height: 1px; color: #EBF0F5; background-color: #EBF0F5; border: none;">
               <span v-if="loading_replies">Loading conversations ...</span>
-              <h3 v-if="threads.length !=0">Convesations</h3>
+              <h5 v-if="threads.length !=0">Conversation Details</h5>
                 <div class="replies" v-for="q in threads">
-                  <p><b>Name:</b> {{q.name}}</p>
-                  <p><b>Email:</b> {{q.email}}</p>
-                  <p><b>Date:</b> {{moment(q.created, 'YYYY-MM-DD hh:mm').format('DD/MM/YYYY hh:mm a')}}</p>
-                  <p><b>Message:</b><span v-html="q.message"></span></p>
-                  <hr>
+                    <div class="replies-name"><b>Name:</b> {{q.name}}</div><br />
+                    <div class="replies-email"><b>Email:</b> {{q.email}}</div><br />
+                    <div class="replies-date"><b>Date:</b> {{moment(q.created, 'YYYY-MM-DD hh:mm').format('DD/MM/YYYY hh:mm a')}}</div><br />
+                    <div class="replies-message"><b>Message:</b><br /><span v-html="q.message"></span></p>
+                    </div>
                 </div>
 
             </div>
