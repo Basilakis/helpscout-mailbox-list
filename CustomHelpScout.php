@@ -25,7 +25,27 @@ class CustomHelpScout
     {
         $fields['customer']['id'] = $customerId;
         $fields['text'] = $text;
-        return $this->request('https://api.helpscout.net/v2/conversations/' . $conversationid, 'POST', '', $fields);
+        return $this->requestReplyThread('https://api.helpscout.net/v2/conversations/' . $conversationid.'/reply', 'POST', '', $fields);
+    }
+
+    private function requestReplyThread($url, $method = 'GET', $page = 1, $fields = null)
+    {
+        $args = array(
+            'method' => $method,
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $this->api_key,
+                'Content-type' => 'application/json; charset=UTF-8'
+            ),
+        );
+        $args['body'] = json_encode($fields);
+        $args['timeout'] = 40;
+        $response = wp_remote_request($url, $args);
+        if ($response['response']['code'] == '401') {
+            return false; // Bail early
+        }
+
+        $data = json_decode($response['body'], true);
+        return $data;
     }
 
     private function request($url, $method = 'GET', $page = 1, $fields = null)
@@ -34,6 +54,7 @@ class CustomHelpScout
             'method' => $method,
             'headers' => array(
                 'Authorization' => 'Bearer ' . $this->api_key,
+                'Content-type' => 'application/json; charset=UTF-8'
             ),
             'body' => array(
                 'page' => $page,
@@ -44,6 +65,7 @@ class CustomHelpScout
                 $args['body'][$key] = $field;
             }
         }
+
         $args['timeout'] = 40;
         $response = wp_remote_request($url, $args);
         if ($response['response']['code'] == '401') {
@@ -53,6 +75,7 @@ class CustomHelpScout
         $data = json_decode($response['body'], true);
         return $data;
     }
+
 
     public function getAccessToken($url, $clientId, $clientSecret)
     {
