@@ -17,7 +17,7 @@ jQuery(document).ready(function($) {
   };
   cols.hideMessage = function() {
     $('body').removeClass('show-message');
-    $('#main .message-list li').removeClass('active');
+    $('#inbox .message-list li').removeClass('active');
     messageIsOpen = false;
   };
 
@@ -75,15 +75,15 @@ jQuery(document).ready(function($) {
 
   // This will prevent click from triggering twice when clicking checkbox/label
 
-  $('input[type=checkbox]').on('click', function(e) {
-    e.stopImmediatePropagation();
-  });
+  // $('input[type=checkbox]').on('click', function(e) {
+  //   e.stopImmediatePropagation();
+  // });
 
 
 
   // When you click the overlay, close everything
 
-  $('#main > .overlay').on('click', function() {
+  $('#inbox > .overlay').on('click', function() {
     cols.hideOverlay();
     cols.hideMessage();
     cols.hideSidebar();
@@ -97,10 +97,9 @@ jQuery(document).ready(function($) {
 
 
   // Disable links
-
-  $('a').on('click', function(e) {
-    e.preventDefault();
-  });
+  // $('a').on('click', function(e) {
+  //   e.preventDefault();
+  // });
 
 
 
