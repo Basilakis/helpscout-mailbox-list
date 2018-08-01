@@ -16,7 +16,7 @@ function helpscout_maillist()
 
     ?>
       <div id="app_cg_helpscout" style="position: relative;">
-        <main id="main">
+        <main id="inbox">
         <div class="overlay"></div>
         <div id="main-nano-wrapper" class="nano">
           <div class="nano-content">
