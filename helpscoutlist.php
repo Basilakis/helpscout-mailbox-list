@@ -29,7 +29,7 @@ function helpscout_maillist()
 
                 <div class="conversations" v-if="conversations.length != 0">
                     <ul class="message-list">
-                      <li class="unread" v-for="(j,index) in conversations" v-on:click="showConversation(j.id,index)" v-if="index != 'paging'">
+                      <li class="unread" v-for="(j,index) in conversations" v-on:click="showConversation(j.id,index)" v-if="!j.current_page">
                         <div class="col col-1"><span class="dot"></span>
                           <div class="checkbox-wrapper">
                             <input type="checkbox" id="chk1">
@@ -43,12 +43,9 @@ function helpscout_maillist()
                         </div>
                       </li>
                     </ul>
+                    <a href="#" class="load-more-link" v-on:click="getConversation( conversations[conversations.length-1]['current_page']+1)">Show more messages</a>
                 </div>  
-                <div class="paging" v-if="conversations.paging">
-                  <ul>
-                    <li v-for="i in conversations.paging.total_pages" v-on:click="getConversation(i)" v-bind:class="{'paging-active':conversations.paging.current_page == i}">{{i}}</li>
-                  </ul>
-              </div>
+                
 
              </div>
            </div>
@@ -144,7 +141,9 @@ function helpscout_maillist()
               this.loading_mail = true;
               jQuery.post(ajaxurl,{'action':'helpscout_get_all_conversations','mailboxId':mailboxid,'page':page, 'token': localStorage.getItem('helpscoutlist_token') },function(data){
                 this.loading_mail = false;
-                this.conversations = data;
+                for(i in data) {
+                  this.conversations.push(data[i]);
+                }
               }.bind(this),'json')
             },
             replyThread: function() {

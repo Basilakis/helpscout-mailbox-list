@@ -46,7 +46,7 @@ jQuery(document).ready(function($) {
 
   // When you click on a message, show it
 
-  $('#main').on('click', ' .message-list li', function(e) {
+  $('#inbox').on('click', ' .message-list li', function(e) {
     var item = $(this),
       target = $(e.target);
 
