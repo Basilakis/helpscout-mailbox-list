@@ -337,14 +337,7 @@ function helpscoutlist_script()
                 array()
             );
         }
-        if (!wp_script_is('bootstrapjs', 'enqueued')) {
-            wp_enqueue_script(
-                'bootstrapjs',
-                'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js',
-                array()
-            );
-        }
-
+      
         wp_enqueue_script(
           'helpscoutmailbox',
             plugin_dir_url(__FILE__).'assets/js/mailbox.js',
