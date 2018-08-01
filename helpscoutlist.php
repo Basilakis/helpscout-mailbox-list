@@ -322,7 +322,7 @@ function helpscoutlist_script()
 {
     global $post;
     global $wp_query;
-    if (strstr($post->post_content, 'helpsout-mail-list')) {
+    // if (strstr($post->post_content, 'helpsout-mail-list')) {
         wp_enqueue_script(
             'jquery');
         if (!wp_script_is('vuejs', 'enqueued')) {
@@ -359,7 +359,7 @@ function helpscoutlist_script()
        wp_enqueue_style('fontapi', 'https://fonts.googleapis.com/css?family=Roboto:400,100,300,500');
        wp_enqueue_style('glyphicon', 'https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css');
         
-    }
+    // }
 }
 function helpscout_call_enqueue(){
   add_action('wp_enqueue_scripts', 'helpscoutlist_script', 2);  
