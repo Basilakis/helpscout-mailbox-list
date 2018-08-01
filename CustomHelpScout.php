@@ -15,7 +15,7 @@ class CustomHelpScout
     {
         $current_user = wp_get_current_user();
         if ($current_user) {
-            $email = 'info@creativeg.gr';
+            $email = $current_user->user_email;
             return $this->request('https://api.helpscout.net/v2/conversations?mailbox=' . $mailboxid . '&status=active,open&query=(email:"' . $email . '")', "GET", $page);
         } else {
             return $this->request('https://api.helpscout.net/v2/conversations?mailbox=' . $mailboxid . '&status=active,open', "GET", $page);
