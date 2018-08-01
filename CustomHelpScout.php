@@ -16,9 +16,9 @@ class CustomHelpScout
         $current_user = wp_get_current_user();
         if ($current_user) {
             $email = $current_user->user_email;
-            return $this->request('https://api.helpscout.net/v2/conversations?mailbox=' . $mailboxid . '&status=active,open&query=(email:"' . $email . '")', "GET", $page);
+            return $this->request('https://api.helpscout.net/v2/conversations?mailbox=' . $mailboxid . '&status=active,open,closed,pending&query=(email:"' . $email . '")', "GET", $page);
         } else {
-            return $this->request('https://api.helpscout.net/v2/conversations?mailbox=' . $mailboxid . '&status=active,open', "GET", $page);
+            return $this->request('https://api.helpscout.net/v2/conversations?mailbox=' . $mailboxid . '&status=active,open,closed,pending', "GET", $page);
         }
 
     }
@@ -26,13 +26,17 @@ class CustomHelpScout
     public function getAllThreads($conversationid)
     {
         return $this->request('https://api.helpscout.net/v2/conversations/' . $conversationid . '/threads');
-
     }
 
     public function replyToThread($conversationid, $customerId, $text)
     {
         $fields['customer']['id'] = $customerId;
         $fields['text']           = $text;
+        $current_user = wp_get_current_user();
+        if ($current_user) {
+            $fields['user'] = $current_user->user_email;
+         }   
+        
         return $this->requestReplyThread('https://api.helpscout.net/v2/conversations/' . $conversationid . '/reply', 'POST', '', $fields);
     }
 

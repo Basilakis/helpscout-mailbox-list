@@ -35,7 +35,8 @@ function helpscout_maillist()
                             <input type="checkbox" id="chk1">
                             <label for="chk1" class="toggle"></label>
                           </div>
-                          <p class="title">{{j.firstname}} {{j.lastname}}</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
+                          <p class="title">{{j.firstname}} {{j.lastname}}</p>
+                          <span v-bind:class="{'star-toggle glyphicon glyphicon-star-empty':'1==1','pending':j.status == 'pending','active':j.status == 'active','open':j.status == 'open','closed':j.status == 'closed'}"></span>
                         </div>
                         <div class="col col-2">
                           <div class="subject">{{j.subject}} &nbsp;&nbsp;&nbsp;&nbsp;<span class="teaser">{{j.preview}}</span></div>
@@ -54,7 +55,11 @@ function helpscout_maillist()
            <div class="header">
              <h1 class="page-title"><a class="icon circle-icon glyphicon glyphicon-chevron-left trigger-message-close"></a>Replies
               <span class="grey" v-if="threads.length>0">({{threads[0].total}})</span></h1>
+              <div class="subject">
+                 Subject: {{conversationdetail.subject}}
+              </div>
              <p v-if="threads.length>0">Started By <a href="#">{{threads[0].name}}</a>, started on <a href="#"> {{moment(conversationdetail.created, 'YYYY-MM-DD').format('DD/MM/YYYY')}}</a></p>
+             
            </div>
            <span v-if="loading_replies">Loading conversations ...</span>
            <div id="message-nano-wrapper" class="nano">
@@ -262,6 +267,7 @@ function helpscout_get_all_conversations()
                 $return[$count]['customerid'] = $customer['id'];
                 $return[$count]['lastname'] = $customer['last'];
                 $return[$count]['preview'] = $conver['preview'];
+                $return[$count]['status'] = $conver['status'];
                 $count++;
                 // }
 
