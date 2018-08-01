@@ -13,33 +13,41 @@ class CustomHelpScout
 
     public function getAllConversations($mailboxid, $page = 1)
     {
-        return $this->request('https://api.helpscout.net/v2/conversations?mailbox=' . $mailboxid . '&status=active,open', "GET", $page);
+        $current_user = wp_get_current_user();
+        if ($current_user) {
+            $email = 'info@creativeg.gr';
+            return $this->request('https://api.helpscout.net/v2/conversations?mailbox=' . $mailboxid . '&status=active,open&query=(email:"' . $email . '")', "GET", $page);
+        } else {
+            return $this->request('https://api.helpscout.net/v2/conversations?mailbox=' . $mailboxid . '&status=active,open', "GET", $page);
+        }
+
     }
 
     public function getAllThreads($conversationid)
     {
         return $this->request('https://api.helpscout.net/v2/conversations/' . $conversationid . '/threads');
+
     }
 
     public function replyToThread($conversationid, $customerId, $text)
     {
         $fields['customer']['id'] = $customerId;
-        $fields['text'] = $text;
-        return $this->requestReplyThread('https://api.helpscout.net/v2/conversations/' . $conversationid.'/reply', 'POST', '', $fields);
+        $fields['text']           = $text;
+        return $this->requestReplyThread('https://api.helpscout.net/v2/conversations/' . $conversationid . '/reply', 'POST', '', $fields);
     }
 
     private function requestReplyThread($url, $method = 'GET', $page = 1, $fields = null)
     {
         $args = array(
-            'method' => $method,
+            'method'  => $method,
             'headers' => array(
                 'Authorization' => 'Bearer ' . $this->api_key,
-                'Content-type' => 'application/json; charset=UTF-8'
+                'Content-type'  => 'application/json; charset=UTF-8',
             ),
         );
-        $args['body'] = json_encode($fields);
+        $args['body']    = json_encode($fields);
         $args['timeout'] = 40;
-        $response = wp_remote_request($url, $args);
+        $response        = wp_remote_request($url, $args);
         if ($response['response']['code'] == '401') {
             return false; // Bail early
         }
@@ -51,12 +59,12 @@ class CustomHelpScout
     private function request($url, $method = 'GET', $page = 1, $fields = null)
     {
         $args = array(
-            'method' => $method,
+            'method'  => $method,
             'headers' => array(
                 'Authorization' => 'Bearer ' . $this->api_key,
-                'Content-type' => 'application/json; charset=UTF-8'
+                'Content-type'  => 'application/json; charset=UTF-8',
             ),
-            'body' => array(
+            'body'    => array(
                 'page' => $page,
             ),
         );
@@ -67,7 +75,7 @@ class CustomHelpScout
         }
 
         $args['timeout'] = 40;
-        $response = wp_remote_request($url, $args);
+        $response        = wp_remote_request($url, $args);
         if ($response['response']['code'] == '401') {
             return false; // Bail early
         }
@@ -76,14 +84,13 @@ class CustomHelpScout
         return $data;
     }
 
-
     public function getAccessToken($url, $clientId, $clientSecret)
     {
         $args = array(
             'method' => 'POST',
-            'body' => array(
-                'grant_type' => 'client_credentials',
-                'client_id' => $clientId,
+            'body'   => array(
+                'grant_type'    => 'client_credentials',
+                'client_id'     => $clientId,
                 'client_secret' => $clientSecret,
             ),
         );

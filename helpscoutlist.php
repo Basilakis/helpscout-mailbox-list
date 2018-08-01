@@ -18,73 +18,77 @@ function helpscout_maillist()
 {
 
     ?>
-      <div id="app_cg_helpscout">
-          <div class="mailboxes">
-              <div>
+      <div id="app_cg_helpscout" style="position: relative;">
+        <main id="main">
+        <div class="overlay"></div>
+        <div id="main-nano-wrapper" class="nano">
+          <div class="nano-content">
                 <div>
                   <span v-if="loading_mailbox">Loading your mailbox ...</span>
                     <h2 v-if="choosen_mailbox_name">Your Mailbox</h2>
                     <h3 v-if="choosen_mailbox_name">{{choosen_mailbox_name}}</h3>
                 </div>
                 <span v-if="loading_mail">Loading mails ...</span>
+
                 <div class="conversations" v-if="conversations.length != 0">
-                  <h4>Your Mails</h4>
-
-                    <ul>
-                      <li v-for="(j,index) in conversations" data-toggle="modal" data-backdrop="false" data-target="#myModal" v-on:click="showConversation(j.id,index)" class="subject" v-if="j.subject"><b>Subject:</b> {{j.subject}} &nbsp;<b>On</b>:
-                      {{moment(j.created, 'YYYY-MM-DD hh:mm').format('DD/MM/YYYY hh:mm a')}}</li>
+                    <ul class="message-list">
+                      <li class="unread" v-for="(j,index) in conversations" v-on:click="showConversation(j.id,index)" v-if="index != 'paging'">
+                        <div class="col col-1"><span class="dot"></span>
+                          <div class="checkbox-wrapper">
+                            <input type="checkbox" id="chk1">
+                            <label for="chk1" class="toggle"></label>
+                          </div>
+                          <p class="title">{{j.firstname}} {{j.lastname}}</p><span class="star-toggle glyphicon glyphicon-star-empty"></span>
+                        </div>
+                        <div class="col col-2">
+                          <div class="subject">{{j.subject}} &nbsp;&nbsp;&nbsp;&nbsp;<span class="teaser">{{j.preview}}</span></div>
+                          <div class="date">{{moment(j.created, 'YYYY-MM-DD hh:mm').format('DD/MM/YYYY hh:mm a')}}</div>
+                        </div>
+                      </li>
                     </ul>
+                </div>  
+                <div class="paging" v-if="conversations.paging">
+                  <ul>
+                    <li v-for="i in conversations.paging.total_pages" v-on:click="getConversation(i)" v-bind:class="{'paging-active':conversations.paging.current_page == i}">{{i}}</li>
+                  </ul>
               </div>
-              <div class="paging" v-if="conversations.paging">
-                <ul>
-                  <li v-for="i in conversations.paging.total_pages" v-on:click="getConversation(i)" v-bind:class="{'paging-active':conversations.paging.current_page == i}">{{i}}</li>
-                </ul>
-              </div>
-            </div>
 
-          </div>
+             </div>
+           </div>
+         </main>   
+         <div id="message">
+           <div class="header">
+             <h1 class="page-title"><a class="icon circle-icon glyphicon glyphicon-chevron-left trigger-message-close"></a>Replies
+              <span class="grey" v-if="threads.length>0">({{threads[0].total}})</span></h1>
+             <p v-if="threads.length>0">Started By <a href="#">{{threads[0].name}}</a>, started on <a href="#"> {{moment(conversationdetail.created, 'YYYY-MM-DD').format('DD/MM/YYYY')}}</a></p>
+           </div>
+           <span v-if="loading_replies">Loading conversations ...</span>
+           <div id="message-nano-wrapper" class="nano">
+             <div class="nano-content">
+               <ul class="message-container">
+                 <li class="sent" v-for="q in threads">
+                   <div class="details">
+                     <div class="left">{{q.name}}
+                     </div>
+                     <div class="right">{{moment(q.created, 'YYYY-MM-DD hh:mm').format('DD/MM/YYYY hh:mm a')}}</div>
+                   </div>
+                   <div class="message">
+                     <p v-html="q.message"></p>
+                   </div>
+                   <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#" class="circle-icon small red-hover glyphicon glyphicon-flag"></a></div>
+                 </li>
+               </ul>
 
-
-      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Conversation</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div style="overflow-y:scroll;height:500px;">
-              <p><b>Subject:</b> {{conversationdetail.subject}}</p><br/>
-              <p><b>Date:</b> {{moment(conversationdetail.created, 'YYYY-MM-DD').format('DD/MM/YYYY')}}</p><br/>
-              <hr>
-              <span v-if="loading_replies">Loading conversations ...</span>
-              <h3 v-if="threads.length !=0">Conversations</h3>
-                <div class="replies" v-for="q in threads">
-                  <p><b>Name:</b> {{q.name}}</p>
-                  <p><b>Email:</b> {{q.email}}</p>
-                  <p><b>Date:</b> {{moment(q.created, 'YYYY-MM-DD hh:mm').format('DD/MM/YYYY hh:mm a')}}</p>
-                  <p><b>Message:</b><span v-html="q.message"></span></p>
-                  <hr>
-                </div>
-
-               </div>
-               <div>
-                <label>Reply</label>
-                 <textarea v-model="replytext"></textarea>
+               <div class="reply" style="width:50%;" v-if="threads.length>0">
+                  <label>Reply</label>
+                  <textarea v-model="replytext" rows="15" cols="10"></textarea>
+                  <button type="button" class="btn btn-primary" v-if="loading_reply_btn == true" disabled>Reply</button>
+                  <button type="button" class="btn btn-primary" v-if="loading_reply_btn == false" v-on:click="replyThread">Reply</button>
                </div>
 
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" v-if="loading_reply_btn == true" disabled>Reply</button>
-              <button type="button" class="btn btn-primary" v-if="loading_reply_btn == false" v-on:click="replyThread">Reply</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  </div>
-          </div>
-        </div>
-      </div>
-
+             </div>
+           </div>
+         </div>
       </div>
       <script type="text/javascript">
          var app = new Vue({
@@ -148,12 +152,13 @@ function helpscout_maillist()
             },
             replyThread: function() {
               var ajaxurl = '<?php echo admin_url('admin-ajax.php'); ?>';
+              if(this.replytext == '') return false;
               this.loading_reply_btn = true;
-              console.log(this.conversationdetail);
+              
               jQuery.post(ajaxurl,{'action':'helpscout_reply_thread','token': localStorage.getItem('helpscoutlist_token'),'conversationId':this.conversationdetail.id,'customerId':this.conversationdetail.customerid, 'text': this.replytext},function(data){
-                console.log(23432423);
                   this.loading_reply_btn = false;  
                   this.showConversation(this.conversationdetail.id,this.current_conversation_index);
+                  this.replytext = '';
 
               }.bind(this),'json')
             },
@@ -260,7 +265,7 @@ function helpscout_get_all_conversations()
                 $return[$count]['firstname'] = $customer['first'];
                 $return[$count]['customerid'] = $customer['id'];
                 $return[$count]['lastname'] = $customer['last'];
-                $return[$count]['preview'] = $conver['photoUrl'];
+                $return[$count]['preview'] = $conver['preview'];
                 $count++;
                 // }
 
@@ -279,20 +284,24 @@ function helpscout_get_all_threads()
     $return = array();
     if (isset($convers['_embedded']['threads']) && count($convers['_embedded']['threads']) > 0) {
         $count = 0;
+
         foreach ($convers['_embedded']['threads'] as $t) {
+
             $return[$count]['created'] = $t['createdAt'];
             $created = $t['createdBy'];
             $return[$count]['name'] = $created['first'] . ' ' . $created['last'];
             $return[$count]['email'] = $created['email'];
             $return[$count]['message'] = isset($t['body']) ? $t['body'] : '';
+          
             $count++;
         }
+        $return[0]['total'] = $convers['page']['totalElements'];
     }
     echo json_encode($return);die;
 
 }
 
-add_shortcode('helpsout-mail-list', 'helpscout_maillist');
+
 
 add_action('wp_ajax_helpscout_get_all_mailboxes', 'helpscout_get_all_mailboxes');
 add_action('wp_ajax_nopriv_helpscout_get_all_mailboxes', 'helpscout_get_all_mailboxes');
@@ -339,7 +348,21 @@ function helpscoutlist_script()
             );
         }
 
-        wp_enqueue_style('custom-bootstrap', plugin_dir_url(__FILE__) .'assets/css/modal.css');
+        wp_enqueue_script(
+          'helpscoutmailbox',
+            plugin_dir_url(__FILE__).'assets/js/mailbox.js',
+            array()
+        );
+            
+        
+       wp_enqueue_style('modalcss', plugin_dir_url(__FILE__).'assets/css/modal.css');     
+       wp_enqueue_style('fontapi', 'https://fonts.googleapis.com/css?family=Roboto:400,100,300,500');
+       wp_enqueue_style('glyphicon', 'https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css');
+        
     }
 }
-add_action('wp_enqueue_scripts', 'helpscoutlist_script');
+function helpscout_call_enqueue(){
+  add_action('wp_enqueue_scripts', 'helpscoutlist_script', 2);  
+}
+add_action('init', 'helpscout_call_enqueue');
+add_shortcode('helpsout-mail-list', 'helpscout_maillist');
