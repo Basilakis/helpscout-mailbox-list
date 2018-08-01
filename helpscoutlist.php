@@ -9,11 +9,8 @@ Version: 1.0
 License: GPLv2 or later
 */
 
-
-const HELPSCOUT_SUPPORT_API_ID = 'ee08d01d0d6142a6a7016d313c08f331';
-const HELPSCOUT_SUPPORT_API_SECRET = '73635281fc394b2297682006dbf5f769';
-
 require 'CustomHelpScout.php';
+require 'config/config.php';
 function helpscout_maillist()
 {
 
@@ -81,7 +78,7 @@ function helpscout_maillist()
 
                <div class="reply" style="width:50%;" v-if="threads.length>0">
                   <label>Reply</label>
-                  <textarea v-model="replytext" rows="15" cols="10"></textarea>
+                  <textarea v-model="replytext" rows="5" cols="10"></textarea>
                   <button type="button" class="btn btn-primary" v-if="loading_reply_btn == true" disabled>Reply</button>
                   <button type="button" class="btn btn-primary" v-if="loading_reply_btn == false" v-on:click="replyThread">Reply</button>
                </div>
@@ -355,7 +352,7 @@ function helpscoutlist_script()
         );
             
         
-       wp_enqueue_style('modalcss', plugin_dir_url(__FILE__).'assets/css/modal.css');     
+       wp_enqueue_style('helpscoutmailbox', plugin_dir_url(__FILE__).'assets/css/mailbox.css');     
        wp_enqueue_style('fontapi', 'https://fonts.googleapis.com/css?family=Roboto:400,100,300,500');
        wp_enqueue_style('glyphicon', 'https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css');
         
