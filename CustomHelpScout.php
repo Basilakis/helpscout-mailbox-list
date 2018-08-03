@@ -23,20 +23,33 @@ class CustomHelpScout
 
     }
 
+    public function getLoggedInUserId($mailboxId)
+    {
+        $current_user = wp_get_current_user();
+        if ($current_user) {
+            $email = $current_user->user_email;
+            $user = $this->request('https://api.helpscout.net/v2/users?mailbox='.$mailboxId.'&email='.$email);
+            if ($user && isset($user['_embedded']['users'][0]['id'])) {
+                $userid = $user['_embedded']['users'][0]['id'];
+                return $userid;
+            } else {
+                return false;
+            }
+        }
+    }
+
     public function getAllThreads($conversationid)
     {
         return $this->request('https://api.helpscout.net/v2/conversations/' . $conversationid . '/threads');
     }
 
-    public function replyToThread($conversationid, $customerId, $text)
+    public function replyToThread($conversationid, $customerId, $text, $userId = '')
     {
         $fields['customer']['id'] = (int)$customerId;
         $fields['text']           = $text;
-        $current_user = wp_get_current_user();
-        // if ($current_user) {
-        //     $fields['user'] = $current_user->user_email;
-        //  }   
-        
+        if ($userId) {
+            $fields['user'] = $userId;
+         }   
         return $this->requestReplyThread('https://api.helpscout.net/v2/conversations/' . $conversationid . '/reply', 'POST', '', $fields);
         
     }
@@ -51,7 +64,6 @@ class CustomHelpScout
             ),
         );
         $args['body']    = json_encode($fields);
-        // print_r($args);die;
         $args['timeout'] = 40;
         $response        = wp_remote_request($url, $args);
         if ($response['response']['code'] == '401') {

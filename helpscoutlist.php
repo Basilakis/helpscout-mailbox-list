@@ -100,7 +100,8 @@ function helpscout_maillist()
             loading_replies:false,
             loading_reply_btn: false,
             replytext:'',
-            current_conversation_index:''
+            current_conversation_index:'',
+            currentuserid: ''
             }
           },
           created:function(){
@@ -129,7 +130,20 @@ function helpscout_maillist()
                 this.choosen_mailbox = this.mailboxes[0]['id'];
                 this.choosen_mailbox_name = this.mailboxes[0]['name'];
                 this.getConversation();
+                this.getCurrentUserId();
+
                 this.loading_mailbox = false;
+              }.bind(this),'json')
+            },
+            getCurrentUserId : function(){
+              var ajaxurl = '<?php echo admin_url('admin-ajax.php'); ?>';
+              jQuery.post(ajaxurl,{'action':'helpscout_get_current_user','mailboxId':this.choosen_mailbox,'token': localStorage.getItem('helpscoutlist_token') },function(data){
+                if (data.status) {
+                  this.currentuserid = data.id;
+                } else {
+                  this.currentuserid = '';
+                }
+                
               }.bind(this),'json')
             },
             getConversation:function(page){
@@ -151,7 +165,7 @@ function helpscout_maillist()
               if(this.replytext == '') return false;
               this.loading_reply_btn = true;
               
-              jQuery.post(ajaxurl,{'action':'helpscout_reply_thread','token': localStorage.getItem('helpscoutlist_token'),'conversationId':this.conversationdetail.id,'customerId':this.conversationdetail.customerid, 'text': this.replytext},function(data){
+              jQuery.post(ajaxurl,{'action':'helpscout_reply_thread','token': localStorage.getItem('helpscoutlist_token'),'conversationId':this.conversationdetail.id,'customerId':this.conversationdetail.customerid, 'text': this.replytext, 'currentuserId': this.currentuserid},function(data){
                   this.loading_reply_btn = false;  
                   this.showConversation(this.conversationdetail.id,this.current_conversation_index);
                   this.replytext = '';
@@ -230,8 +244,9 @@ function helpscout_reply_thread()
     $customerId = $_POST['customerId'];
     $conversationId = $_POST['conversationId'];
     $text = $_POST['text'];
+    $currentuserId = $_POST['currentuserId'];
     $hs = new CustomHelpScout($token);
-    $hs->replyToThread($conversationId, $customerId, $text);
+    $hs->replyToThread($conversationId, $customerId, $text, $currentuserId);
     $return['status'] = true;
     echo json_encode($return);die;
 
@@ -298,6 +313,23 @@ function helpscout_get_all_threads()
 
 }
 
+function helpscout_get_current_user()
+{
+    $mailboxId = $_POST['mailboxId'];
+    $token = $_POST['token'];
+    $hs = new CustomHelpScout($token);
+    $currentuser = $hs->getLoggedInUserId($mailboxId);
+    $return = array();
+    if ($currentuser) {
+      $return['id'] = $currentuser;
+      $return['status'] = true;
+    } else {
+      $return['id'] = null;
+      $return['status'] = false;
+    }
+    echo json_encode($return);die;
+}
+
 
 
 add_action('wp_ajax_helpscout_get_all_mailboxes', 'helpscout_get_all_mailboxes');
@@ -314,6 +346,9 @@ add_action('wp_ajax_nopriv_helpscout_get_all_threads', 'helpscout_get_all_thread
 
 add_action('wp_ajax_helpscout_reply_thread', 'helpscout_reply_thread');
 add_action('wp_ajax_nopriv_helpscout_reply_thread', 'helpscout_reply_thread');
+
+add_action('wp_ajax_helpscout_get_current_user', 'helpscout_get_current_user');
+add_action('wp_ajax_nopriv_helpscout_get_current_user', 'helpscout_get_current_user');
 
 function helpscoutlist_script()
 {
