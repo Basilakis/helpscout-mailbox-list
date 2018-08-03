@@ -30,14 +30,15 @@ class CustomHelpScout
 
     public function replyToThread($conversationid, $customerId, $text)
     {
-        $fields['customer']['id'] = $customerId;
+        $fields['customer']['id'] = (int)$customerId;
         $fields['text']           = $text;
         $current_user = wp_get_current_user();
-        if ($current_user) {
-            $fields['user'] = $current_user->user_email;
-         }   
+        // if ($current_user) {
+        //     $fields['user'] = $current_user->user_email;
+        //  }   
         
         return $this->requestReplyThread('https://api.helpscout.net/v2/conversations/' . $conversationid . '/reply', 'POST', '', $fields);
+        
     }
 
     private function requestReplyThread($url, $method = 'GET', $page = 1, $fields = null)
@@ -50,6 +51,7 @@ class CustomHelpScout
             ),
         );
         $args['body']    = json_encode($fields);
+        // print_r($args);die;
         $args['timeout'] = 40;
         $response        = wp_remote_request($url, $args);
         if ($response['response']['code'] == '401') {

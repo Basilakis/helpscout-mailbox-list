@@ -44,7 +44,7 @@ function helpscout_maillist()
                         </div>
                       </li>
                     </ul>
-                    <a href="#" class="load-more-link" v-on:click="getConversation( conversations[conversations.length-1]['current_page']+1)">Show more messages</a>
+                    <a href="#" class="load-more-link" v-on:click="getConversation( conversations[conversations.length-1]['current_page']+1)" v-if="conversations[conversations.length-1]['current_page']<conversations[conversations.length-1]['total_pages']">Show more messages</a>
                 </div>  
                 
 
@@ -264,7 +264,7 @@ function helpscout_get_all_conversations()
                 $return[$count]['customer'] = $customer = $conver['createdBy'];
                 $return[$count]['email'] = $customer['email'];
                 $return[$count]['firstname'] = $customer['first'];
-                $return[$count]['customerid'] = $customer['id'];
+                $return[$count]['customerid'] = $conver['primaryCustomer']['id'];
                 $return[$count]['lastname'] = $customer['last'];
                 $return[$count]['preview'] = $conver['preview'];
                 $return[$count]['status'] = $conver['status'];
