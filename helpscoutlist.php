@@ -22,19 +22,15 @@ function helpscout_maillist()
           <div class="nano-content">
                 <div>
                   <span v-if="loading_mailbox">Loading your mailbox ...</span>
-                    <h2 v-if="choosen_mailbox_name">Your Mailbox</h2>
-                    <h3 v-if="choosen_mailbox_name">{{choosen_mailbox_name}}</h3>
+                    <!-- <h2 v-if="choosen_mailbox_name">Your Mailbox</h2>
+                    <h3 v-if="choosen_mailbox_name">{{choosen_mailbox_name}}</h3> -->
                 </div>
                 <span v-if="loading_mail">Loading mails ...</span>
 
                 <div class="conversations" v-if="conversations.length != 0">
                     <ul class="message-list">
                       <li class="unread" v-for="(j,index) in conversations" v-on:click="showConversation(j.id,index)" v-if="!j.current_page">
-                        <div class="col col-1"><span class="dot"></span>
-                          <div class="checkbox-wrapper">
-                            <input type="checkbox" id="chk1">
-                            <label for="chk1" class="toggle"></label>
-                          </div>
+                        <div class="col col-1">
                           <p class="title">{{j.firstname}} {{j.lastname}}</p>
                           <span v-bind:class="{'star-toggle glyphicon glyphicon-star-empty':'1==1','pending':j.status == 'pending','active':j.status == 'active','open':j.status == 'open','closed':j.status == 'closed'}"></span>
                         </div>
@@ -74,7 +70,6 @@ function helpscout_maillist()
                    <div class="message">
                      <p v-html="q.message"></p>
                    </div>
-                   <div class="tool-box"><a href="#" class="circle-icon small glyphicon glyphicon-share-alt"></a><a href="#" class="circle-icon small red-hover glyphicon glyphicon-remove"></a><a href="#" class="circle-icon small red-hover glyphicon glyphicon-flag"></a></div>
                  </li>
                </ul>
 

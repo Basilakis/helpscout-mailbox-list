@@ -73,14 +73,6 @@ jQuery(document).ready(function($) {
   });
 
 
-  // This will prevent click from triggering twice when clicking checkbox/label
-
-  // $('input[type=checkbox]').on('click', function(e) {
-  //   e.stopImmediatePropagation();
-  // });
-
-
-
   // When you click the overlay, close everything
 
   $('#inbox > .overlay').on('click', function() {
@@ -93,14 +85,6 @@ jQuery(document).ready(function($) {
 
   // Enable sexy scrollbars
   $('.nano').nanoScroller();
-
-
-
-  // Disable links
-  // $('a').on('click', function(e) {
-  //   e.preventDefault();
-  // });
-
 
 
   // Search box responsive stuff
